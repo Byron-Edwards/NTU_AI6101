@@ -9,7 +9,7 @@ class DQN(nn.Module):
     def __init__(self, input_shape, n_actions):
         super(DQN, self).__init__()
 
-        self.convs = nn.Sequential(
+        self.conv = nn.Sequential(
             nn.Conv2d(input_shape[0], 32, kernel_size=8, stride=4),
             nn.ReLU(),
             nn.Conv2d(32, 64, kernel_size=4, stride=2),
@@ -20,20 +20,20 @@ class DQN(nn.Module):
 
         conv_out_size = self._get_conv_out(input_shape)
 
-        self.full_connect = nn.Sequential(
+        self.fc = nn.Sequential(
             nn.Linear(conv_out_size, 512),
             nn.ReLU(),
             nn.Linear(512, n_actions)
         )
 
     def _get_conv_out(self, shape):
-        o = self.convs(Variable(torch.zeros(1, *shape)))
+        o = self.conv(Variable(torch.zeros(1, *shape)))
         return int(np.prod(o.size()))
 
     def forward(self, x):
         x = x.float() / 256
-        output_conv = self.convs(x).view(x.size()[0], -1)
-        output = self.full_connect(output_conv)
+        output_conv = self.conv(x).view(x.size()[0], -1)
+        output = self.fc(output_conv)
         return output
 
 

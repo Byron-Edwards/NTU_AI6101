@@ -13,3 +13,14 @@ def get_arg(params):
     args = parser.parse_args()
 
     return args
+
+
+def get_play_arg(params):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--model", required=True, help="Model file to load")
+    parser.add_argument("-e", "--env", default=params.env, help="Environment name to use, default=" + params.env)
+    parser.add_argument("-r", "--record", help="Directory for video")
+    parser.add_argument("--no-vis", default=False, dest='vis', help="Disable visualization", action='store_false')
+    args = parser.parse_args()
+
+    return args
