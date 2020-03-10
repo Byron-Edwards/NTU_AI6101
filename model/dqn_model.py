@@ -31,7 +31,7 @@ class DQN(nn.Module):
         return int(np.prod(o.size()))
 
     def forward(self, x):
-        x = x.float() / 256
+        # x = x.float() / 256
         output_conv = self.conv(x).view(x.size()[0], -1)
         output = self.fc(output_conv)
         return output
@@ -76,13 +76,14 @@ class Agent:
     @torch.no_grad()
     def play(self, net, epsilon=0.0, device="cpu"):
         done_reward = None
+
+        state = self.state
         if np.random.random() < epsilon:
             # take a random action
             action = self.env.action_space.sample()
         else:
             # get a max value aciton from the q-table
-            state = np.array([self.state], copy=False)
-            state_vector = torch.tensor(state).to(device)
+            state_vector = torch.tensor(np.array([state], copy=False)).to(device)
             qvals_vector = net(state_vector)
             _, act_v = torch.max(qvals_vector, dim=1)
             action = int(act_v.item())
@@ -90,11 +91,13 @@ class Agent:
         # get transition from the environment
         new_state, reward, is_done, _ = self.env.step(action)
         self.total_reward += reward
-        self.state = new_state
 
         # add transitions into replay buffer for later sample
-        trans = Transition(self.state, action, reward, is_done, new_state)
+        trans = Transition(state, action, reward, is_done, new_state)
         self.replay_buffer.append(trans)
+
+        # update state
+        self.state = new_state
 
         if is_done:
             done_reward = self.total_reward

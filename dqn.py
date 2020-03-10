@@ -7,7 +7,7 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 
-from common import args, atari_wrappers, const
+from common import args, atari_wrappers, const, wrappers
 from model import dqn_model as model
 
 
@@ -55,8 +55,9 @@ if __name__ == "__main__":
     device = torch.device("cuda" if args.cuda else "cpu")
 
     # wappers of env
-    env = atari_wrappers.make_atari(params.env, skip_noop=True)
-    env = atari_wrappers.wrap_deepmind(env, pytorch_img=True, frame_stack=True, frame_stack_count=2)
+    # env = atari_wrappers.make_atari(params.env, skip_noop=True)
+    # env = atari_wrappers.wrap_deepmind(env, pytorch_img=True, frame_stack=True, frame_stack_count=2)
+    env = wrappers.make_env(params.env)
 
     # init policyNet and targetNet
     policy_net = model.DQN(env.observation_space.shape, env.action_space.n).to(device)
