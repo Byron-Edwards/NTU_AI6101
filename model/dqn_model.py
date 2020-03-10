@@ -43,10 +43,6 @@ Transition = collections.namedtuple('Transition', field_names=['state', 'action'
 class ReplayBuffer:
     def __init__(self, capacity):
         self.buffer = collections.deque(maxlen=capacity)
-        self.experience_source_iter = None
-        self.buffer = []
-        self.capacity = capacity
-        self.pos = 0
 
     def __len__(self):
         return len(self.buffer)

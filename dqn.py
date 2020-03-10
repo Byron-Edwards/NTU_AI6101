@@ -98,8 +98,9 @@ if __name__ == "__main__":
             writer.add_scalar("indicator/epsilon", epsilon, frame)
 
             # save best model every 100 frame and chech whether the training is done
-            every_save_epoch = frame % 100
-            if every_save_epoch is not 0:
+            # each game have 1784 frame now
+            every_save_epoch = len(total_rewards) % 2
+            if every_save_epoch is 0:
                 if best_m_reward is None:
                     best_m_reward = m_reward
                 elif best_m_reward < m_reward and m_reward > 0:
@@ -126,6 +127,6 @@ if __name__ == "__main__":
         # get a sample batch
         batch = buffer.sample(args.batch_size)
         loss = calc_loss(batch, policy_net, target_net, gamma=params.gamma, is_double=args.double, device=device)
-        writer.add_scalar("loss/batch", loss, frame / args.batch_size)
+        writer.add_scalar("loss/batch", loss / args.batch_size, frame)
         loss.backward()
         optimizer.step()
