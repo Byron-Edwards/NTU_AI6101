@@ -22,6 +22,8 @@ def calc_loss(batch, policy_net, target_net, gamma, is_double=False, device="cpu
     done_mask = torch.BoolTensor(dones).to(device)
 
     # get values of acitons in state_v
+    with writer as w:
+        w.add_graph(policy_net, (states_v,))
     state_action_values = policy_net(states_v).gather(
         1, actions_v.unsqueeze(-1)).squeeze(-1)
     with torch.no_grad():
