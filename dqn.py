@@ -7,7 +7,7 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 
-from common import args, atari_wrappers, const, wrappers
+from common import args, const, wrappers
 from model import dqn_model as model
 
 
@@ -22,7 +22,8 @@ def calc_loss(batch, policy_net, target_net, gamma, is_double=False, device="cpu
     done_mask = torch.BoolTensor(dones).to(device)
 
     # get values of acitons in state_v
-    state_action_values = policy_net(states_v).gather(1, actions_v.unsqueeze(-1)).squeeze(-1)
+    state_action_values = policy_net(states_v).gather(
+        1, actions_v.unsqueeze(-1)).squeeze(-1)
     with torch.no_grad():
         next_state_values = target_net(next_states_v).max(1)[0]
         # done mask
@@ -30,7 +31,8 @@ def calc_loss(batch, policy_net, target_net, gamma, is_double=False, device="cpu
         if is_double:
             next_state_acts = policy_net(next_states_v).max(1)[1]
             next_state_acts = next_state_acts.unsqueeze(-1)
-            next_state_vals = target_net(next_states_v).gather(1, next_state_acts).squeeze(-1).detach()
+            next_state_vals = target_net(next_states_v).gather(
+                1, next_state_acts).squeeze(-1).detach()
         else:
             # not influence the net
             next_state_vals = next_state_values.detach()
@@ -45,7 +47,7 @@ if __name__ == "__main__":
     warnings.simplefilter("ignore", category=UserWarning)
 
     # set args and params
-    params = const.HYPERPARAMS['default']
+    params = const.HYPERPARAMS['optimize']
     args = args.get_arg(params)
     torch.manual_seed(args.seed)
 
@@ -55,8 +57,6 @@ if __name__ == "__main__":
     device = torch.device("cuda" if args.cuda else "cpu")
 
     # wappers of env
-    # env = atari_wrappers.make_atari(params.env, skip_noop=True)
-    # env = atari_wrappers.wrap_deepmind(env, pytorch_img=True, frame_stack=True, frame_stack_count=2)
     env = wrappers.make_env(params.env)
 
     # init policyNet and targetNet
@@ -76,10 +76,18 @@ if __name__ == "__main__":
     ts = time.time()
     best_m_reward = None
 
+    # load from model
+    if args.model:
+        assert torch.load(args.model)
+        state = torch.load(args.model)
+        policy_net.load_state_dict(state)
+        params.epsilon_start = 0.01
+        print('load model')
     # training loop
     while True:
         frame += 1
-        epsilon = max(params.epsilon_final, params.epsilon_start - frame / params.epsilon_frames)
+        epsilon = max(params.epsilon_final, params.epsilon_start -
+                      frame / params.epsilon_frames)
 
         reward = agent.play(policy_net, epsilon, device=device)
         if reward is not None:
@@ -127,7 +135,8 @@ if __name__ == "__main__":
 
         # get a sample batch
         batch = buffer.sample(args.batch_size)
-        loss = calc_loss(batch, policy_net, target_net, gamma=params.gamma, is_double=args.double, device=device)
+        loss = calc_loss(batch, policy_net, target_net,
+                         gamma=params.gamma, is_double=args.double, device=device)
         writer.add_scalar("loss/batch", loss / args.batch_size, frame)
         loss.backward()
         optimizer.step()

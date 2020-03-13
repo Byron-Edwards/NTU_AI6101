@@ -31,13 +31,13 @@ class DQN(nn.Module):
         return int(np.prod(o.size()))
 
     def forward(self, x):
-        # x = x.float() / 256
         output_conv = self.conv(x).view(x.size()[0], -1)
         output = self.fc(output_conv)
         return output
 
 
-Transition = collections.namedtuple('Transition', field_names=['state', 'action', 'reward', 'done', 'new_state'])
+Transition = collections.namedtuple('Transition', field_names=[
+                                    'state', 'action', 'reward', 'done', 'new_state'])
 
 
 class ReplayBuffer:
@@ -57,10 +57,11 @@ class ReplayBuffer:
         indices = np.random.choice(len(self.buffer), batch_size, replace=False)
 
         # in order to acclerate calculate
-        states, actions, rewards, dones, next_states = zip(*[self.buffer[idx] for idx in indices])
+        states, actions, rewards, dones, next_states = zip(
+            *[self.buffer[idx] for idx in indices])
 
         return np.array(states), np.array(actions), np.array(rewards, dtype=np.float32), \
-               np.array(dones, dtype=np.uint8), np.array(next_states)
+            np.array(dones, dtype=np.uint8), np.array(next_states)
 
 
 class Agent:
@@ -83,7 +84,8 @@ class Agent:
             action = self.env.action_space.sample()
         else:
             # get a max value aciton from the q-table
-            state_vector = torch.tensor(np.array([state], copy=False)).to(device)
+            state_vector = torch.tensor(
+                np.array([state], copy=False)).to(device)
             qvals_vector = net(state_vector)
             _, act_v = torch.max(qvals_vector, dim=1)
             action = int(act_v.item())
