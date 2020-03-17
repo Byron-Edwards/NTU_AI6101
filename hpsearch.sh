@@ -19,8 +19,8 @@ python a2c_main.py --cuda --name 1  --batchsize 32  --envsize 50 --game boxing -
 python a2c_main.py --cuda --name 2  --batchsize 32  --envsize 50 --game boxing --stopreward 100 --lr 0.00001 &
 python a2c_main.py --cuda --name 3  --batchsize 32  --envsize 16 --game boxing --stopreward 100 --lr 0.00001 &
 python a2c_main.py --cuda --name 4  --batchsize 64  --envsize 32 --game boxing --stopreward 100 --lr 0.00001 &
-python a2c_main.py --cuda --name 4  --batchsize 128  --envsize 32 --game boxing --stopreward 100 --lr 0.00001 &
-python a2c_main.py --cuda --name 4  --batchsize 128  --envsize 64 --game boxing --stopreward 100 --lr 0.00001 &
+python a2c_main.py --cuda --name 5  --batchsize 128  --envsize 32 --game boxing --stopreward 100 --lr 0.00001 &
+python a2c_main.py --cuda --name 6  --batchsize 128  --envsize 64 --game boxing --stopreward 100 --lr 0.00001 &
 
 
 
