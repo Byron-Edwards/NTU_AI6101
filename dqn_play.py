@@ -6,7 +6,7 @@ import numpy as np
 
 
 from model import dqn_model as model
-from common import args, atari_wrappers, const
+from common import args, const, wrappers
 
 FPS = 25
 
@@ -15,8 +15,7 @@ if __name__ == "__main__":
     params = const.HYPERPARAMS['default']
     args = args.get_play_arg(params)
 
-    env = atari_wrappers.make_atari(params.env, skip_noop=True)
-    env = atari_wrappers.wrap_deepmind(env, pytorch_img=True, frame_stack=True, frame_stack_count=2)
+    env = wrappers.make_env(params.env)
 
     # record a mp4 for play
     if args.record:

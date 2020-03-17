@@ -10,6 +10,7 @@ def get_arg(params):
     parser.add_argument("--lr", default=params.learning_rate, help="learning_rate")
     parser.add_argument("--batch_size", default=params.batch_size, help="training batch_size")
     parser.add_argument("--seed", default=params.seed, help="training batch_size")
+    parser.add_argument("--model", help="Model file to load")
     args = parser.parse_args()
 
     return args
