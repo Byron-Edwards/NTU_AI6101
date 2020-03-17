@@ -1,1 +1,2 @@
+torch
 tensorboard>=1.14
