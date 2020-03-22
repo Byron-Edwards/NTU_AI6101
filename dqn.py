@@ -22,8 +22,6 @@ def calc_loss(batch, policy_net, target_net, gamma, is_double=False, device="cpu
     done_mask = torch.BoolTensor(dones).to(device)
 
     # get values of acitons in state_v
-    with writer as w:
-        w.add_graph(policy_net, (states_v,))
     state_action_values = policy_net(states_v).gather(
         1, actions_v.unsqueeze(-1)).squeeze(-1)
     with torch.no_grad():
@@ -62,8 +60,10 @@ if __name__ == "__main__":
     env = wrappers.make_env(params.env)
 
     # init policyNet and targetNet
-    policy_net = model.DQN(env.observation_space.shape, env.action_space.n).to(device)
-    target_net = model.DQN(env.observation_space.shape, env.action_space.n).to(device)
+    policy_net = model.DQN(env.observation_space.shape,
+                           env.action_space.n).to(device)
+    target_net = model.DQN(env.observation_space.shape,
+                           env.action_space.n).to(device)
 
     # init agent and replayBuffer
     buffer = model.ReplayBuffer(params.replay_size)
