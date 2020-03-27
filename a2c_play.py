@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cuda", default=False, action="store_true", help="Enable cuda")
     parser.add_argument("-m", "--model", required=True, help="Model file to load")
-    parser.add_argument("-e", "--env", default="boxing", type= str, help="Environment name to use, default=")
+    parser.add_argument("-e", "--env", default="pong", type= str, help="Environment name to use, default=")
     parser.add_argument("-r", "--record", default= "record",help="Directory for video")
     parser.add_argument("--no-vis", default=False, dest='vis', help="Disable visualization", action='store_false')
     args = parser.parse_args()
@@ -55,7 +55,6 @@ if __name__ == "__main__":
         probs_v = F.softmax(probs_v, dim=1)
         probs = probs_v.data.cpu().numpy()
         action = selector(probs).item()
-        print(action)
         c[action] += 1
 
         state, reward, done, _ = env.step(action)
